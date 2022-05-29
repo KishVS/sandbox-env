@@ -1,0 +1,33 @@
+---
+- name: Install node exporter
+  hosts: ansible_server
+  tasks:
+    - name: Add multiple repositories into the same file (1/2)
+      yum_repository:
+        name: prometheus
+        description: prometheus YUM repo
+        file: external_repos
+        baseurl: https://packagecloud.io/prometheus-rpm/release/el/$releasever/$basearch
+        repo_gpgcheck: 1
+        enabled: 1
+        gpgkey: https://packagecloud.io/prometheus-rpm/release/gpgkey
+          https://raw.githubusercontent.com/lest/prometheus-rpm/master/RPM-GPG-KEY-prometheus-rpm
+        gpgcheck: 1
+        metadata_expire=: 300
+    - name: Install Node exporter and prometheus server
+      package: 
+        name:
+          - node_exporter
+          - prometheus
+        state: installed
+    - name: Automatically start node_exporter
+      service:
+        name: node_exporter
+        state: started
+        enabled: yes
+    - name: Automatically start prometheus
+      service:
+        name: prometheus
+        state: started
+        enabled: yes
+
